@@ -1,0 +1,34 @@
+{ extends "index.html"}
+
+{% block content %}
+    <h1>{% block title %} Pievieno jaunu plānotāju!{% endblock %}</h1>
+
+    <form method="post">
+
+        <div class="form-group">
+            <label for="nosaukums">Ievadiet plānotāja nosaukumu!</label>
+            <input type="text" name="nosaukums"
+                   placeholder="Nosaukums" class="form-control"
+                   value="{{ request.form['planot_nosauk'] }}"></input>
+        </div>
+    
+        <div class="form-group">
+            <label for="teksts">Izvēlieties kategoriju, kas atbilst jūsu plānotājam!</label>
+            <textarea name="teksts" placeholder="kategorija"
+                      class="form-control">{{ request.form['planot_kategorija'] }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="teksts">Ievadiet savas preces vai lietas!</label>
+            <textarea name="teksts" placeholder="Prece vai lieta, piemēram piens, tomāti, utt."
+                      class="form-control">{{ request.form['prece_lieta'] }}</textarea>
+        </div>
+    
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Pievienot</button>
+        </div>
+    
+    
+    </form>
+    
+{% endblock %}
