@@ -28,7 +28,7 @@ def index():
     c = conn.cursor()	
     planotajs = c.execute('SELECT * FROM planotajs').fetchall()
     conn.close()
-    return render_template('welcomepage.html', planotajs=planotajs)
+    return render_template('index.html', planotajs=planotajs)
 
 @app.route("/sakums", methods=('GET', 'POST'))
 def sakums():
@@ -46,7 +46,6 @@ def budzeta_planotajs():
         conn.close()
         return redirect(url_for('index'))
     return render_template('budzeta_planotajs.html')
-
 
 @app.route('/jauns_planotajs', methods=('GET', 'POST'))
 def jauns_planotajs():
