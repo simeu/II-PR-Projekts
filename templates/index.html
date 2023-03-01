@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{% block title %} Visi plānotāji {% endblock %}</h1>
-    {% for partikprec in prece %}
-        <h2>{{ partikprec["Prece"], partikprec ["Cena"] }}</h2>
-    {% endfor %}
+    <h1> Laipni lūgts! </h1>
+    <h2> Ja esi jauns lietotājs, spied "reģistrēties"! Ja jau esi reģistrējies, spied "Ienākt"!</h2>
+    <button type="button" onclick="window.location.href='/login'"> Ienākt </button>
+    <button type="button" onclick="window.location.href='/register'"> Reģistrēties </button>
 
 {% endblock %}

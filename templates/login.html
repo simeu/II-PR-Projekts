@@ -1,0 +1,12 @@
+{% extends "base.html" %} 
+
+{% block content %} 
+    <label> Lietotājvārds </label>
+    <input type="text" placeholder = "Ievadiet lietotājvārdu" name="username" required>
+    <label> Parole </label>
+    <input type="password" placeholder = "Ievadiet paroli" name="password" required>
+    <button type="submit"> Ienākt </button>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+{% endblock %}
