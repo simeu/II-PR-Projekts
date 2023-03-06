@@ -1,0 +1,20 @@
+{% extends "base.html" %} 
+
+{% block content %} 
+    <label> Vārds </label>
+    <input type="text" placeholder = "Ievadiet savu vārdu" name="vards" required>
+    <label> Uzvārds </label>
+    <input type="text" placeholder = "Ievadiet savu uzvārdu" name="uzvards" required>
+    <label> Lietotājvārds </label>
+    <input type="text" placeholder = "Ievadiet lietotājvārdu" name="username" required>
+    <label> E-pasts </label>
+    <input type="text" placeholder = "Ievadiet savu e-pastu" name="epasts" required>
+    <label> Parole </label>
+    <input type="password" placeholder = "Ievadiet paroli" name="password" required>
+    <button type="submit"> Reģistrēties </button>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+{% endblock %} 
+
