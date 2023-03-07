@@ -52,9 +52,10 @@ def ienakt():
             if lietotajvards == lietotajs['lietotajvards'] and parole == lietotajs['parole']:
                 flash("Jūs esat ienācis!")
                 return redirect(url_for('index'))
-        flash("Nepareizs lietotājvārds vai parole!")
-        return redirect(url_for('ienakt'))
-    return render_template("login.html")
+            else:
+                flash("Nepareizs lietotājvārds vai parole!")
+                return redirect(url_for('ienakt'))
+        return render_template('login.html')
 
 @app.route('/jauns_planotajs', methods=['GET', 'POST'])
 def jauns_planotajs():
