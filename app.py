@@ -55,7 +55,7 @@ def ienakt():
             else:
                 flash("Nepareizs lietotājvārds vai parole!")
                 return redirect(url_for('ienakt'))
-        return render_template('login.html')
+    return render_template('login.html')
 
 @app.route('/jauns_planotajs', methods=['GET', 'POST'])
 def jauns_planotajs():
@@ -77,6 +77,7 @@ def registreties():
         conn.close()
         return redirect(url_for('index'))
     return render_template("registreties.html")
+
 
 if __name__ == '__main__':
     app.run(debug=True)
