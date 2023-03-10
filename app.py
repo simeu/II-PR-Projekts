@@ -2,6 +2,10 @@ import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash
 import html
 import hashlib
+from datetime import date
+import numpy as np
+import plotly.express as px
+
 
 
 def savienot():
@@ -17,11 +21,7 @@ app.config["SECRET_KEY"] = "dsfn893ru9rubnfb"
 
 @app.route('/')
 def index():
-    conn = savienot()
-    prece = conn.execute('SELECT * FROM  veids').fetchall()
-    conn.commit()
-    conn.close()
-    return render_template('index.html', prece=prece)
+    return render_template('index.html')
 
 @app.route("/par", methods=['GET', 'POST'])
 def par():
@@ -30,22 +30,18 @@ def par():
 @app.route("/budzeta_planotajs")
 def budzeta_planotajs():
     conn = savienot()
-    c = conn.cursor()
-    if request.method == 'POST':
-        ievade = request.form['ievade']
-        ievade = html.escape(ievade)
-        c.execute("INSERT INTO planotajs (ievade) VALUES (?)", (ievade,))
-        conn.commit()
-        conn.close()
-        return redirect(url_for('index'))
-    return render_template('budzeta_planotajs.html')
+    planotajs = conn.execute('SELECT * FROM planotajs').fetchall()
+    cena = conn.execute('SELECT cena FROM planotajs').fetchall()
+    prece = conn.execute('SELECT prece FROM planotajs').fetchall()
+    return render_template('budzeta_planotajs.html', planotajs=planotajs, cena=cena, prece=prece)
+
 
 @app.route("/ienakt", methods=['GET', 'POST'])
 def ienakt():
     conn = savienot()
     lietotaji = conn.execute('SELECT * FROM lietotaji').fetchall()
     if request.method == 'POST':
-        lietotajvards = request.form['lietotajvards']
+        lietotajvards = request.form['lietotajv']
         parole = request.form['parole']
         parole = hashlib.sha256(parole.encode('utf-8')).hexdigest()
         for lietotajs in lietotaji:
@@ -66,7 +62,7 @@ def registreties():
     conn = savienot()
     c = conn.cursor()
     if request.method == 'POST':
-        lietotajvards = request.form['lietotajvards']
+        lietotajvards = request.form['lietotajv']
         parole = request.form['parole']
         epasts = request.form['epasts']
         vards = request.form['vards']

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{% block title %} Budžeta plānotājs {% endblock %}</h1>
+    {% for viensplanotajs in planotajs %}
+        <h2> {{ viensplanotajs["prece"]}} {{ viensplanotajs["cena"]}}</h2>
+    {% endfor %}
+
+{% endblock %}
