@@ -2,10 +2,6 @@ import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash
 import html
 import hashlib
-from datetime import date
-import numpy as np
-import plotly.express as px
-
 
 
 def savienot():
@@ -55,7 +51,8 @@ def ienakt():
 
 @app.route('/jauns_planotajs', methods=['GET', 'POST'])
 def jauns_planotajs():
-    return render_template("jauns_planotajs.html")
+    jauns_plan = c.execute('SELECT prece_kategorija FROM planotajs').fetchall()
+    return render_template("jauns_planotajs.html", jauns_plan=jauns_plan)
 
 @app.route("/registreties", methods=['GET', 'POST'])
 def registreties():

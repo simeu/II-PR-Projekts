@@ -12,14 +12,12 @@
                    value="{{ request.form['planot_nosauk'] }}"></input>
         </div>
     
-        <div class="dropdown", data-bs-theme="light">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonLight" data-bs-toggle="dropdown" aria-expanded="false">
-                Kategorija
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonLight">r="teksts">Izvēlieties kategoriju, kas atbilst jūsu plānotājam!</label>
-            <textarea name="teksts" placeholder="kategorija"
-                      class="form-control">{{ request.form['planot_kategorija'] }}</textarea>
-        </div>
+        <select class="form-select form-select-sm" aria-label=".form-select-sm example">
+            <option selected>Izvēlieties kategoriju!</option>
+            <option value="1"> {{ planotajs[prece_kategorija[1]] }}</option>
+            <option value="2"> {{ planotajs[prece_kategorija[2]] }} </option>
+            <option value="3"> {{ planotajs[prece_kategorija[3]] }} </option>
+          </select>
 
         <div class="form-group">
             <label for="teksts">Ievadiet savas preces vai lietas!</label>
@@ -28,7 +26,7 @@
         </div>
     
         <div class="form-group">
-            <button type="submit" class="btn btn-primary">Pievienot</button>
+            <button type="submit" class="btn btn-success">Pievienot</button>
         </div>
     
     </form>
