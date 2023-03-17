@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1>{% block title %} Budžeta plānotājs {% endblock %}</h1>
-    <h2> Prece/lieta    Cena (EUR)</h2>
+    <h2> Prece/lieta  ;  Cena (EUR)</h2>
     {% for viensplanotajs in planotajs %}
         <h3> {{ viensplanotajs["prece"]}} {{ viensplanotajs["cena"]}}</h3>
     {% endfor %}

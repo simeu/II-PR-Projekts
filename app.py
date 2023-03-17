@@ -3,7 +3,6 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 import html
 import hashlib
 
-
 def savienot():
     conn = sqlite3.connect('planotajs.db')
     c = conn.cursor()
@@ -23,13 +22,34 @@ def index():
 def par():
     return render_template('par.html')
 
+@app.route('/jauns_planotajs', methods=['GET', 'POST'])
+def jauns_planotajs():
+    conn = savienot()
+    if request.method == "POST":
+        try:
+            prece = request.form['prece']
+        except KeyError:
+            flash("Lūdzu, ievadiet preci!")
+            return redirect(url_for("jauns_planotajs"))       
+        cena = request.form['cena']
+        kategorija = request.form['kategorija']
+        ievietot = conn.execute("INSERT INTO planotajs (prece, cena, kategorija) VALUES (?, ?, ?)", (prece, cena, kategorija))
+        conn.commit()
+        conn.close()
+        flash("Ieraksts veiksmīgi pievienots!")
+        return redirect(url_for("budzeta_planotajs"))
+    return render_template('jauns_planotajs.html')
+
+
 @app.route("/budzeta_planotajs")
 def budzeta_planotajs():
     conn = savienot()
-    planotajs = conn.execute('SELECT * FROM planotajs').fetchall()
-    cena = conn.execute('SELECT cena FROM planotajs').fetchall()
-    prece = conn.execute('SELECT prece FROM planotajs').fetchall()
-    return render_template('budzeta_planotajs.html', planotajs=planotajs, cena=cena, prece=prece)
+    if request.method == "GET":
+        planotajs = conn.execute('SELECT * FROM planotajs').fetchall()
+        cena = conn.execute('SELECT cena FROM planotajs').fetchall()
+        prece = conn.execute('SELECT prece FROM planotajs').fetchall()
+        return render_template('budzeta_planotajs.html', planotajs=planotajs, cena=cena, prece=prece)
+    return redirect(url_for('index'))
 
 
 @app.route("/ienakt", methods=['GET', 'POST'])
@@ -48,11 +68,7 @@ def ienakt():
                 flash("Nepareizs lietotājvārds vai parole!")
                 return redirect(url_for('ienakt'))
     return render_template('login.html')
-
-@app.route('/jauns_planotajs', methods=['GET', 'POST'])
-def jauns_planotajs():
-    jauns_plan = c.execute('SELECT prece_kategorija FROM planotajs').fetchall()
-    return render_template("jauns_planotajs.html", jauns_plan=jauns_plan)
+        
 
 @app.route("/registreties", methods=['GET', 'POST'])
 def registreties():
@@ -70,7 +86,6 @@ def registreties():
         conn.close()
         return redirect(url_for('index'))
     return render_template("registreties.html")
-
 
 if __name__ == '__main__':
     app.run(debug=True)
