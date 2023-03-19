@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{% block title %} Pievieno jaunu plānotāju! {% endblock %}</h1>
+    <h1>{% block title %} Labo plānotāju! {% endblock %}</h1>
 
     <form method="post">
 
@@ -9,15 +9,16 @@
             <label for="prece">Ievadiet preces vai lietas!</label>
             <input type="text" name="prece" placeholder="Prece vai lieta, piemēram piens, tomāti, utt."
                    placeholder="Nosaukums" class="form-control"
-                   value="{{ request.form['prece'] }}"></input>
+                   value="{{ request.form['prece'] or planotajs["prece"] }}"></input>
         </div>
 
         <div class="form-group">
             <label for="cena">Ievadiet savas preces vai lietas vērtību EURO!</label>
             <textarea type="number" name="cena" placeholder="Preces vai lietas vērtība EURO, piemēram 1.50, 2.00, utt."
-                      class="form-control">{{ request.form['cena'] }}</textarea>
+                      class="form-control">{{ request.form['cena'] or planotajs["cena"]}}</textarea>
         </div>
-
+    
+    
         <div class="form-group">
             <button type="submit" class="btn btn-success">Pievienot</button>
             <form action="/budzeta_planotajs" method="post">

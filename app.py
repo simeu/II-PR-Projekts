@@ -4,7 +4,7 @@ import html
 import hashlib
 
 def savienot():
-    conn = sqlite3.connect('planotajs.db')
+    conn = sqlite3.connect('planotajs.db', timeout=20)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -64,6 +64,7 @@ def registreties():
 def ienakt():
     conn = savienot()
     lietotaji = conn.execute('SELECT * FROM lietotaji').fetchall()
+    conn.close()
     if request.method == 'POST':
         lietotajvards = request.form['lietotajv']
         parole = request.form['parole']
@@ -73,7 +74,29 @@ def ienakt():
                 flash("Jūs esat ienācis!")
                 return redirect(url_for('index'))
         flash("Nepareizs lietotājvārds vai parole!")
-    return render_template('login.html')
+    return render_template('budzeta_planotajs.html')
+
+@app.route("/<int:id>/labot", methods = ['GET', 'POST'])
+def labot(id):
+    conn = savienot()
+    planotajs = conn.execute("SELECT id FROM planotajs WHERE id = ?", (id,)).fetchone()
+    conn.close()
+    if request.method == "POST":
+        prece = request.form.get('prece')
+        cena = request.form.get('cena')
+        if not prece:
+            flash("Ieraksti preci!")
+            
+        else: 
+            conn = savienot()
+            conn.execute("UPDATE planotajs SET prece=? , cena=? WHERE id=?", (prece, cena, id))
+            conn.commit()
+            conn.close()
+            return redirect(url_for('budzeta_planotajs'))
+            
+    return render_template('labot.html', planotajs=planotajs)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
