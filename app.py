@@ -25,42 +25,42 @@ def par():
 def jauns_planotajs():
     conn = savienot()
     if request.method == "POST":
+        id = request.form.get('id')
         prece = request.form.get('prece')
         cena = request.form.get('cena')
-        kategorija = request.form.get('kategorija')
-        conn.execute("INSERT INTO planotajs (prece, cena, kategorija) VALUES (?, ?, ?)", (prece, cena, kategorija))
+        conn.execute("INSERT INTO planotajs (id, prece, cena) VALUES (?, ?, ?)", (id, prece, cena))
         conn.commit()
         conn.close()
-        return redirect(url_for('budzeta_planotajs', prece=prece, cena=cena, kategorija=kategorija))
+        return redirect(url_for('budzeta_planotajs', prece=prece, cena=cena))
     return render_template('jauns_planotajs.html')
 
 
 @app.route("/budzeta_planotajs")
 def budzeta_planotajs():
     conn = savienot()
-    planotajs = conn.execute('SELECT prece, cena, kategorija FROM planotajs').fetchall()
+    planotajs = conn.execute('SELECT id, prece, cena FROM planotajs').fetchall()
     conn.close()
     return render_template('budzeta_planotajs.html', planotajs=planotajs)
 
 
 
-@app.route("/registreties", methods=['GET', 'POST'])
+'''@app.route("/registreties", methods=['GET', 'POST'])
 def registreties():
     conn = savienot()
     if request.method == 'POST':
         lietotajvards = request.form['lietotajv']
-        parole = request.form['parole']
+        parole1 = request.form['parole']
         epasts = request.form['epasts']
         vards = request.form['vards']
         uzvards = request.form['uzvards']
-        parole = hashlib.sha256(parole.encode('utf-8')).hexdigest()
-        conn.execute("INSERT INTO lietotaji (lietotajvards, parole, epasts, vards, uzvards) VALUES (?, ?, ?, ?, ?)", (lietotajvards, parole, epasts, vards, uzvards))
+        parole2 = hashlib.sha256(parole1.encode('utf-8')).hexdigest()
+        conn.execute("INSERT INTO lietotaji (lietotajvards, parole, epasts, vards, uzvards) VALUES (?, ?, ?, ?, ?)", (lietotajvards, parole2, epasts, vards, uzvards))
         conn.commit()
         conn.close()
         return redirect(url_for('index'))
-    return render_template("registreties.html")
+    return render_template("budzeta_planotajs.html")'''
 
-@app.route("/ienakt", methods=['GET', 'POST'])
+'''@app.route("/ienakt", methods=['GET', 'POST'])
 def ienakt():
     conn = savienot()
     lietotaji = conn.execute('SELECT * FROM lietotaji').fetchall()
@@ -74,7 +74,7 @@ def ienakt():
                 flash("Jūs esat ienācis!")
                 return redirect(url_for('index'))
         flash("Nepareizs lietotājvārds vai parole!")
-    return render_template('budzeta_planotajs.html')
+    return render_template('budzeta_planotajs.html')'''	
 
 @app.route("/<int:id>/labot", methods = ['GET', 'POST'])
 def labot(id):
@@ -95,7 +95,6 @@ def labot(id):
             return redirect(url_for('budzeta_planotajs'))
             
     return render_template('labot.html', planotajs=planotajs)
-
 
 
 if __name__ == '__main__':

@@ -5,6 +5,10 @@
     <h2> Prece/lieta  ;  Cena (EUR)</h2>
     {% for viensplanotajs in planotajs %}
         <h3> {{ viensplanotajs["prece"]}} {{ viensplanotajs["cena"]}}</h3>
+        <div class="form-group">
+            <button type="submit" class="btn btn-warning"><a href="{{ url_for('labot', id=viensplanotajs['id']) }}" class="button">Labot</a></button>
+        </div>
     {% endfor %}
+
 
 {% endblock %}
