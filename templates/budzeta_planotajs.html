@@ -6,9 +6,24 @@
     {% for viensplanotajs in planotajs %}
         <h3> {{ viensplanotajs["prece"]}} {{ viensplanotajs["cena"]}}</h3>
         <div class="form-group">
-            <button type="submit" class="btn btn-warning"><a href="{{ url_for('labot', id=viensplanotajs['id']) }}" class="button">Labot</a></button>
+            <button type="submit" class="btn btn-warning">Labot</a></button>
+            <form action="/labot/{{ viensplanotajs['id'] }}" method="post">
         </div>
+   
+    <div class="form-group">
+        <button type="submit" class="btn btn-danger">Dzēst</button>
+        <form action="/dzest" method="post">
+    </div>
+
     {% endfor %}
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-success">Pievienot</button>
+        <form action="/jauns_planotajs" method="post">
+    </div>
+
+
+    <h2> Kopējā iztērētā summa: {{ summa }} EUR</h2>
 
 
 {% endblock %}

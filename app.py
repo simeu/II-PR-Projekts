@@ -39,8 +39,9 @@ def jauns_planotajs():
 def budzeta_planotajs():
     conn = savienot()
     planotajs = conn.execute('SELECT id, prece, cena FROM planotajs').fetchall()
+    summa = conn.execute("SELECT SUM(cena) FROM planotajs").fetchall()
     conn.close()
-    return render_template('budzeta_planotajs.html', planotajs=planotajs)
+    return render_template('budzeta_planotajs.html', planotajs=planotajs, summa=summa)
 
 
 
@@ -96,6 +97,14 @@ def labot(id):
             
     return render_template('labot.html', planotajs=planotajs)
 
-
+@app.route("/<int:id>/dzest", methods = ['GET', 'POST'])
+def dzest(id):
+    conn = savienot()
+    planotajs = conn.execute("SELECT id FROM planotajs WHERE id = ?", (id,)).fetchone()
+    conn.close()
+    if request.method == "POST":
+        
+        
+        
 if __name__ == '__main__':
     app.run(debug=True)
