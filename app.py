@@ -4,16 +4,16 @@ import html
 import hashlib
 
 def savienot():
-    conn = sqlite3.connect('planotajs.db', timeout=20)
+    conn = sqlite3.connect('planotajs.db', timeout=20) #Tiek veiktw savienojums ar datubāzi, specializēti HTML.
     conn.row_factory = sqlite3.Row
     return conn
 
 app = Flask(__name__,
             template_folder="templates",
             static_folder="static")
-app.config["SECRET_KEY"] = "dsfn893ru9rubnfb"
+app.config["SECRET_KEY"] = "dsfn893ru9rubnfb" #Tiek noteiktas mapes, kuras tiek izmantotas (piem. templates - HTML failiem) un drošības atslēga.
 
-@app.route('/')
+@app.route('/') #Tiek nostādīta Index lapa, uz kuras balstīsies pārējie HTML faili.
 def index():
     return render_template('index.html')
 
@@ -21,7 +21,7 @@ def index():
 def par():
     return render_template('par.html')
 
-@app.route('/jauns_planotajs', methods=['GET', 'POST'])
+@app.route('/jauns_planotajs', methods=['GET', 'POST']) #Tiek izveidots jauns ieraksts.
 def jauns_planotajs():
     conn = savienot()
     if request.method == "POST":
@@ -35,17 +35,17 @@ def jauns_planotajs():
     return render_template('jauns_planotajs.html')
 
 
-@app.route("/budzeta_planotajs")
+@app.route("/budzeta_planotajs") #Tiek parādīts plānotājs (visi ieraksti no datubāzes), kā arī "cena" tiek sasummēta, lai redzētu kopējos tēriņus. 
 def budzeta_planotajs():
     conn = savienot()
     planotajs = conn.execute('SELECT id, prece, cena FROM planotajs').fetchall()
-    summa = conn.execute("SELECT SUM(cena) FROM planotajs").fetchall()
+    summa = conn.execute("SELECT SUM(cena) FROM planotajs").fetchone()[0]
     conn.close()
     return render_template('budzeta_planotajs.html', planotajs=planotajs, summa=summa)
 
 
 
-'''@app.route("/registreties", methods=['GET', 'POST'])
+@app.route("/registreties", methods=['GET', 'POST']) #Reģistrācija.
 def registreties():
     conn = savienot()
     if request.method == 'POST':
@@ -59,9 +59,9 @@ def registreties():
         conn.commit()
         conn.close()
         return redirect(url_for('index'))
-    return render_template("budzeta_planotajs.html")'''
+    return render_template("registreties.html")
 
-'''@app.route("/ienakt", methods=['GET', 'POST'])
+@app.route("/ienakt", methods=['GET', 'POST']) #Pieslēgšanās.
 def ienakt():
     conn = savienot()
     lietotaji = conn.execute('SELECT * FROM lietotaji').fetchall()
@@ -75,12 +75,12 @@ def ienakt():
                 flash("Jūs esat ienācis!")
                 return redirect(url_for('index'))
         flash("Nepareizs lietotājvārds vai parole!")
-    return render_template('budzeta_planotajs.html')'''	
+    return render_template('ienakt.html')
 
-@app.route("/<int:id>/labot", methods = ['GET', 'POST'])
+@app.route("/<int:id>/labot", methods = ['GET', 'POST']) #Ieraksta labošana.
 def labot(id):
     conn = savienot()
-    planotajs = conn.execute("SELECT id FROM planotajs WHERE id = ?", (id,)).fetchone()
+    planotajs = conn.execute("SELECT id FROM planotajs WHERE id = ?", (id,)).fetchone()[0]
     conn.close()
     if request.method == "POST":
         prece = request.form.get('prece')
@@ -93,18 +93,20 @@ def labot(id):
             conn.execute("UPDATE planotajs SET prece=? , cena=? WHERE id=?", (prece, cena, id))
             conn.commit()
             conn.close()
+            flash("Ieraksts veiksmīgi labots!")
             return redirect(url_for('budzeta_planotajs'))
             
     return render_template('labot.html', planotajs=planotajs)
 
-@app.route("/<int:id>/dzest", methods = ['GET', 'POST'])
+@app.route("/<int:id>/dzest", methods = ['POST']) #Ieraksta dzēšana. 
 def dzest(id):
     conn = savienot()
-    planotajs = conn.execute("SELECT id FROM planotajs WHERE id = ?", (id,)).fetchone()
+    conn.execute("SELECT * FROM planotajs WHERE id = ?", (id,)).fetchone()[0]
+    conn.execute("DELETE FROM planotajs WHERE id = ?", (id,))
+    conn.commit()
     conn.close()
-    if request.method == "POST":
-        
-        
-        
+    flash("Ieraksts dzēsts.")
+    return redirect(url_for('index'))
+     
 if __name__ == '__main__':
     app.run(debug=True)

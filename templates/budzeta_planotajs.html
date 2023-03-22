@@ -5,15 +5,13 @@
     <h2> Prece/lieta  ;  Cena (EUR)</h2>
     {% for viensplanotajs in planotajs %}
         <h3> {{ viensplanotajs["prece"]}} {{ viensplanotajs["cena"]}}</h3>
+        
         <div class="form-group">
-            <button type="submit" class="btn btn-warning">Labot</a></button>
-            <form action="/labot/{{ viensplanotajs['id'] }}" method="post">
+            <button type="submit" class="btn btn-warning">
+            <form action="{{ url_for('labot', id=viensplanotajs['id']) }}" method="post">Labot</button>
         </div>
-   
-    <div class="form-group">
-        <button type="submit" class="btn btn-danger">Dzēst</button>
-        <form action="/dzest" method="post">
-    </div>
+    
+        <hr>
 
     {% endfor %}
 
@@ -22,6 +20,7 @@
         <form action="/jauns_planotajs" method="post">
     </div>
 
+    <hr>
 
     <h2> Kopējā iztērētā summa: {{ summa }} EUR</h2>
 

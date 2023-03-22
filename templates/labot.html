@@ -25,6 +25,12 @@
             </form>
         </div>
     
+    <hr>
+
+    <form action="{{ url_for("dzest", id=planotajs["id"]) }}" method="POST">
+        <button type="submit" value="Dzēst"
+        class="btn btn-danger"
+        onclick="return confirm('Vai tiešām vēlaties dzēst ierakstu?')">Dzēst</button>
+      
     </form>
-    
 {% endblock %}
