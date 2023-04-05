@@ -94,7 +94,7 @@ def registreties():
         return redirect(url_for('index'))
     return render_template('registreties.html')
 
-@app.route("/ienakt", methods=['GET', 'POST']) #Lietotājs pieslēdzas sistēmai.
+'''@app.route("/ienakt", methods=['GET', 'POST']) #Lietotājs pieslēdzas sistēmai.
 def ienakt():
     if request.method == "POST":
         lietotajvards = request.form.get('lietotajvards')
@@ -108,7 +108,14 @@ def ienakt():
             flash("Nepareiza parole! Mēģiniet vēlreiz!")
         else:
             return redirect(url_for('budzeta_planotajs'))
-    return render_template('ienakt.html')
-         
+    return render_template('ienakt.html') '''
+
+@app.route("/profils/<int:id>", methods=['GET', 'POST']) #Tiek parādīts lietotāja profils.
+def profils(id):
+    conn = savienot()
+    lietotajs = conn.execute("SELECT * FROM lietotaji WHERE id = ?", (id,)).fetchone()
+    conn.close()
+    return render_template('profils.html', lietotajs=lietotajs)
+    
 if __name__ == '__main__':
     app.run(debug=True)
