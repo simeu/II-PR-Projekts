@@ -2,25 +2,15 @@
 
 {% block content %}
     <h1>{% block title %} Budžeta plānotājs {% endblock %}</h1>
-    <h2> Prece/lieta  ;  Cena (EUR)</h2>
+    <h2>Prece/lieta  ;  Cena (EUR)</h2>
     {% for viensplanotajs in planotajs %}
-        <h3> {{ viensplanotajs["prece"]}} {{ viensplanotajs["cena"]}}</h3>
-        
-        <div class="form-group">
-            <button type="submit" class="btn btn-warning">
-            <form action="{{ url_for('labot', id=viensplanotajs['id']) }}" method="post">Labot</button>
-        </div>
+        <h3>{{ viensplanotajs["prece"]}} {{ viensplanotajs["cena"]}}</h3>
     
-        <hr>
+        <a href="{{ url_for('labot', id=viensplanotajs['id']) }}" class="link-dark">
+            <button class="btn btn-warning">Labot</button>
+    <hr>
 
     {% endfor %}
-
-    <div class="form-group">
-        <button type="submit" class="btn btn-success">Pievienot</button>
-        <form action="/jauns_planotajs" method="post">
-    </div>
-
-    <hr>
 
     <h2> Kopējā iztērētā summa: {{ summa }} EUR</h2>
 

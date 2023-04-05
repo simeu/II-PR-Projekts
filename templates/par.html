@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 
-{% block content %} 
-    {% block title %} <title>Par budžeta plānotāju </title> {% endblock %}
+{% block title %} Par budžeta plānotāju  {% endblock %}
+{% block content %}
+    <figure class = "text-center">
     <h1>Laipni lūgts!</h1>
+    <hr>
     <h2>Kas ir šī aplikācija?</h2>
-    <p>Aplikācija ir projekta darbs programmēšanā Skola2030 programmas ietvaros.</p>
-    <p>Šī aplikācija palīdzēs jums izveidot savu budžetu, lai varētu saprast, kāda ir jūsu mēneša ienākuma un izdevumu situācija.</p>
-    <h2>Lai izveidotu savu personīgo budžeta plānotāju, spiediet pogu zem teksta:</h2>
-    <button type="button" onclick="window.location.href='/jauns_planotajs'"> Izveido savu budžeta plānotāju</button>
+    <p>Aplikācija ir projekta darbs programmēšanā Skola2030 programmas ietvaros.
+        Šī aplikācija palīdzēs jums izveidot savu budžetu, lai varētu saprast, kāda ir jūsu mēneša ienākuma un izdevumu situācija.</p>
+    <hr>
+    <h2><em>Lai izveidotu savu personīgo budžeta plānotāju, spiediet pogu zem teksta:</h2></em>
+    <button type="button" class= "btn btn-secondary" onclick="window.location.href='/jauns_planotajs'">Pievieno jaunu preci!</button>
     
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{% block title %} Labo plānotāju! {% endblock %}</h1>
+    <h1>{% block title %} Labo ierakstu! {% endblock %}</h1>
 
     <form method="post">
 
@@ -25,12 +25,12 @@
             </form>
         </div>
     
-    <hr>
+        <hr>
+        
+        <form action="{{ url_for('dzest', id=planotajs["id"]) }}" method="POST">
+            <button type="submit" value="Dzēst"
+            class="btn btn-danger"
+            onlick="return confirm('Vai tiešām vēlaties dzēst ierakstu?')">Dzēst</button>
+        </form>
 
-    <form action="{{ url_for("dzest", id=planotajs["id"]) }}" method="POST">
-        <button type="submit" value="Dzēst"
-        class="btn btn-danger"
-        onclick="return confirm('Vai tiešām vēlaties dzēst ierakstu?')">Dzēst</button>
-      
-    </form>
 {% endblock %}
