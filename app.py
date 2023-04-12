@@ -1,9 +1,6 @@
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from flask_migrate import Migrate
-from flask_bcrypt import Bcrypt
+import hashlib
 
 
 def savienot():
@@ -87,7 +84,7 @@ def dzest(id):
     flash("Ieraksts veiksmīgi dzēsts!")
     return redirect(url_for('budzeta_planotajs'))
 
-'''@app.route("/registreties", methods=['GET', 'POST']) #Tiek reģistrēts jauns lietotājs.
+@app.route("/registreties", methods=['GET', 'POST']) #Tiek reģistrēts jauns lietotājs.
 def registreties():
     if request.method == "POST":
         lietotajvards = request.form.get('lietotajvards')
@@ -98,9 +95,9 @@ def registreties():
         conn.commit()
         conn.close()
         return redirect(url_for('index'))
-    return render_template('registreties.html')'''
+    return render_template('registreties.html')
 
-'''@app.route("/ienakt", methods=['GET', 'POST']) #Lietotājs pieslēdzas sistēmai.
+@app.route("/ienakt", methods=['GET', 'POST']) #Lietotājs pieslēdzas sistēmai.
 def ienakt():
     if request.method == "POST":
         lietotajvards = request.form.get('lietotajvards')
@@ -108,18 +105,20 @@ def ienakt():
         conn = savienot()
         lietotajs = conn.execute("SELECT * FROM lietotaji WHERE lietotajvards = ?", (lietotajvards,)).fetchone()
         conn.close()
-        if lietotajs is None:
+        if lietotajs is None: #Pievienot pareizu paroļu atpazīšanas algoritmu (salīdzina ar encrypted paroli, nevis lietotāja ievadīto).
             flash("Lietotājs nav atrasts! Lūdzu reģistrējieties vai pārbaudiet rakstzīmes!")
         elif lietotajs[id] != parole:
             flash("Nepareiza parole! Mēģiniet vēlreiz!")
         else:
             return redirect(url_for('budzeta_planotajs'))
-    return render_template('ienakt.html') '''
+    return render_template('login.html')
 
 @app.route("/profils/<int:id>", methods=['GET', 'POST']) #Tiek parādīts lietotāja profils.
 def profils(id):
     conn = savienot()
     lietotajs = conn.execute("SELECT * FROM lietotaji WHERE id = ?", (id,)).fetchone()
+    # Global Variables
+    
     conn.close()
     return render_template('profils.html', lietotajs=lietotajs)
     
