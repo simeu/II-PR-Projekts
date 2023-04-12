@@ -4,7 +4,7 @@
     <h1>{% block title %} Budžeta plānotājs {% endblock %}</h1>
     <h2>Prece/lieta  ;  Cena (EUR)</h2>
     {% for viensplanotajs in planotajs %}
-        <h3>{{ viensplanotajs["prece"]}} {{ viensplanotajs["cena"]}}</h3>
+        <h3>{{ viensplanotajs["prece"]}} ; {{ viensplanotajs["cena"]}}</h3>
     
         <a href="{{ url_for('labot', id=viensplanotajs['id']) }}" class="link-dark">
             <button class="btn btn-warning">Labot</button>

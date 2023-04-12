@@ -1,9 +1,13 @@
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash
-import hashlib
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_migrate import Migrate
+from flask_bcrypt import Bcrypt
+
 
 def savienot():
-    conn = sqlite3.connect('planotajs.db', timeout=20) #Tiek veikts savienojums ar datubāzi, specializēti HTML.
+    conn = sqlite3.connect('planotajs.db') #Tiek veikts savienojums ar datubāzi, specializēti HTML.
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -14,13 +18,15 @@ def sanemt(id):
     
     if ieraksts is None:
         ieraksts = {"prece": "Nezināms", "cena": "Nezināms"}
-        
+
     return ieraksts
 
 app = Flask(__name__,
             template_folder="templates",
             static_folder="static")
 app.config["SECRET_KEY"] = "dsfn893ru9rubnfb" #Tiek noteiktas mapes, kuras tiek izmantotas (piem. templates - HTML failiem) un drošības atslēga.
+
+
 
 @app.route('/') #Tiek nostādīta Index lapa, uz kuras balstīsies pārējie HTML faili.
 def index():
@@ -81,7 +87,7 @@ def dzest(id):
     flash("Ieraksts veiksmīgi dzēsts!")
     return redirect(url_for('budzeta_planotajs'))
 
-@app.route("/registreties", methods=['GET', 'POST']) #Tiek reģistrēts jauns lietotājs.
+'''@app.route("/registreties", methods=['GET', 'POST']) #Tiek reģistrēts jauns lietotājs.
 def registreties():
     if request.method == "POST":
         lietotajvards = request.form.get('lietotajvards')
@@ -92,7 +98,7 @@ def registreties():
         conn.commit()
         conn.close()
         return redirect(url_for('index'))
-    return render_template('registreties.html')
+    return render_template('registreties.html')'''
 
 '''@app.route("/ienakt", methods=['GET', 'POST']) #Lietotājs pieslēdzas sistēmai.
 def ienakt():
