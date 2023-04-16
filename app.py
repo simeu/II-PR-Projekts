@@ -64,6 +64,12 @@ def labot(id):
         if not prece:
             flash("Ieraksti preci!")
             
+        elif not cena:
+            flash("Ieraksti cenu!")
+            
+        elif cena != int or float:
+            flash("Cenai ir jābūt skaitlim!")
+            
         else: 
             conn = savienot()
             conn.execute("UPDATE planotajs SET prece=?, cena=? WHERE id=?", (prece, cena, id))
@@ -89,7 +95,7 @@ def registreties():
     if request.method == "POST":
         lietotajvards = request.form.get('lietotajvards')
         parole = request.form.get('parole')
-        parole2 = parole.sha256(request.form.get('parole').encode('utf-8')).hexdigest()
+        parole2 = parole.sha256.encode('utf-8').hexdigest()
         conn = savienot()
         conn.execute("INSERT INTO lietotaji (lietotajvards, parole) VALUES (?, ?)", (lietotajvards, parole2))
         conn.commit()

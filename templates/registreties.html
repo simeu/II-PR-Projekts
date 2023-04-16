@@ -1,18 +1,29 @@
 {% extends "base.html" %} 
 
-{% block content %} 
-# Form group jāuztaisa, līzīgi kā jauns_planotajs.html.
-    <label> Vārds </label>
-    <input type="text" placeholder = "Ievadiet savu vārdu" name="vards" required>
-    <label> Uzvārds </label>
-    <input type="text" placeholder = "Ievadiet savu uzvārdu" name="uzvards" required>
-    <label> Lietotājvārds </label>
-    <input type="text" placeholder = "Ievadiet lietotājvārdu" name="username" required>
-    <label> E-pasts </label>
-    <input type="text" placeholder = "Ievadiet savu e-pastu" name="epasts" required>
-    <label> Parole </label>
-    <input type="password" placeholder = "Ievadiet paroli" name="password" required>
-    <button type="submit" onclick > Reģistrēties </button>
+{% block content %}
+    <h1>{% block title %} Reģistrēšanās{% endblock %}</h1>
 
-{% endblock %} 
+    <form method="post">
 
+        <div class="form-group">
+            <label for="prece">Ievadiet lietotājvārdu</label>
+            <input type="text" name="prece" placeholder="Lietotājvārds pēc izvēles."
+                   placeholder="Nosaukums" class="form-control"
+                   value="{{ request.form['lietotajv'] }}"></input>
+        </div>
+
+        <div class="form-group">
+            <label for="cena">Ievadiet savas preces vai lietas vērtību EURO!(*Ja ir decimālskaitlis, jāraksta punkts, nevis komats.)</label>
+            <input type="number" name="cena" placeholder="Parole 5-10 simbolu garumā."
+                      class="form-control">{{ request.form['parole'] }}</input> 
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-success">Reģistrēties</button>
+            <form action="/budzeta_planotajs" method="post">
+            </form>
+        </div>
+    
+    </form>
+    
+{% endblock %}
