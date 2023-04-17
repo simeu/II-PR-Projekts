@@ -1,22 +1,9 @@
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash
 import hashlib
+import db_savienotajs as db
+import ierakstu_sanemsana as ieraksti
 
-
-def savienot():
-    conn = sqlite3.connect('planotajs.db') #Tiek veikts savienojums ar datubāzi, specializēti HTML.
-    conn.row_factory = sqlite3.Row
-    return conn
-
-def sanemt(id):
-    conn = savienot()
-    ieraksts = conn.execute("SELECT * FROM planotajs WHERE id = ?", (id,)).fetchone()
-    conn.close()
-    
-    if ieraksts is None:
-        ieraksts = {"prece": "Nezināms", "cena": "Nezināms"}
-
-    return ieraksts
 
 app = Flask(__name__,
             template_folder="templates",
@@ -35,7 +22,7 @@ def par():
 '''
 @app.route("/budzeta_planotajs") #Tiek parādīts plānotājs (visi ieraksti no datubāzes), kā arī "cena" tiek sasummēta, lai redzētu kopējos tēriņus. 
 def budzeta_planotajs():
-    conn = savienot()
+    conn = db()
     planotajs = conn.execute('SELECT id, prece, cena FROM planotajs').fetchall()
     summa = conn.execute("SELECT SUM(cena) FROM planotajs").fetchone()[0]
     conn.close()
@@ -43,7 +30,7 @@ def budzeta_planotajs():
 
 @app.route('/jauns_planotajs', methods=['GET', 'POST']) #Tiek izveidots jauns ieraksts.
 def jauns_planotajs():
-    conn = savienot()
+    conn = db()
     if request.method == "POST":
         id = request.form.get('id')
         prece = request.form.get('prece')
@@ -57,7 +44,7 @@ def jauns_planotajs():
 
 @app.route("/<int:id>/labot", methods = ['GET', 'POST']) #Ierakstu labošana.
 def labot(id):
-    planotajs = sanemt(id)
+    planotajs = db(id)
     if request.method == "POST":
         prece = request.form.get('prece')
         cena = request.form.get('cena')
@@ -71,7 +58,7 @@ def labot(id):
             flash("Cenai ir jābūt skaitlim!")
             
         else: 
-            conn = savienot()
+            conn = db()
             conn.execute("UPDATE planotajs SET prece=?, cena=? WHERE id=?", (prece, cena, id))
             conn.commit()
             conn.close()
@@ -82,8 +69,8 @@ def labot(id):
 
 @app.route("/<int:id>/dzest", methods = ('POST',))#Ierakstu dzēšana.
 def dzest(id):
-    planotajs = sanemt(id)
-    conn = savienot()
+    planotajs = db(id)
+    conn = db()
     conn.execute("DELETE FROM planotajs WHERE id = ?", (id,))
     conn.commit()
     conn.close()
@@ -96,7 +83,7 @@ def registreties():
         lietotajvards = request.form.get('lietotajvards')
         parole = request.form.get('parole')
         parole2 = parole.sha256.encode('utf-8').hexdigest()
-        conn = savienot()
+        conn = db()
         conn.execute("INSERT INTO lietotaji (lietotajvards, parole) VALUES (?, ?)", (lietotajvards, parole2))
         conn.commit()
         conn.close()
@@ -108,7 +95,7 @@ def ienakt():
     if request.method == "POST":
         lietotajvards = request.form.get('lietotajvards')
         parole = request.form.get('parole')
-        conn = savienot()
+        conn = db()
         lietotajs = conn.execute("SELECT * FROM lietotaji WHERE lietotajvards = ?", (lietotajvards,)).fetchone()
         conn.close()
         if lietotajs is None: #Pievienot pareizu paroļu atpazīšanas algoritmu (salīdzina ar encrypted paroli, nevis lietotāja ievadīto).
@@ -121,7 +108,7 @@ def ienakt():
 
 @app.route("/profils/<int:id>", methods=['GET', 'POST']) #Tiek parādīts lietotāja profils.
 def profils(id):
-    conn = savienot()
+    conn = db()
     lietotajs = conn.execute("SELECT * FROM lietotaji WHERE id = ?", (id,)).fetchone()
     # Global Variables
     
