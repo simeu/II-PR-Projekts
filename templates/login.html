@@ -7,28 +7,18 @@
 
         <div class="form-group">
             <label for="prece">Ievadiet lietotājvārdu</label>
-            <input type="text" name="lietotajv" placeholder="Lietotājvārds pēc izvēles (5-10 simbolu garumā)."
-                   placeholder="Nosaukums" class="form-control"
-                   value="{{ request.form['lietotajv'] }}"></input>
+            <input type="text" required name="lietotajv" placeholder="Lietotājvārds pēc izvēles (5-10 simbolu garumā)."
+                   class="form-control" value="{{ request.form['lietotajv'] }}"></input>
         </div>
 
         <div class="form-group">
             <label for="cena">Ievadiet paroli</label>
-            <input type="real" name="parole" placeholder="Parole 5-10 simbolu garumā."
+            <input type="password" required name="parole" placeholder="Parole 5-10 simbolu garumā."
                       class="form-control">{{ request.form['parole'] }}</input> 
         </div>
 
         <div class="form-group">
             <button type="submit" class="btn btn-success">Reģistrēties</button>
-            {% if request.form['parole'] != request.form['parole2'] %}
-                {% flash("Paroles nesakrīt! Mēģiniet vēlreiz.") %}
-            {% elif request.form["lietotajv"] != request.form["lietotajv"] %}
-                {% flash("Lietotājvārds jau ir aizņemts! Mēģiniet vēlreiz.") %}
-            {% elif %}
-            {% else %}
-                <form action="/budzeta_planotajs" method="post">
-                </form>
-            {% endif %}
         </div>
     
     </form>

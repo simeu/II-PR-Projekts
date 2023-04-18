@@ -1,18 +1,37 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <figure class="text-center">
     <h1>{% block title %} Budžeta plānotājs {% endblock %}</h1>
-    <h2>Prece/lieta  ;  Cena (EUR)</h2>
-    {% for viensplanotajs in planotajs %}
-        <h3>{{ viensplanotajs["prece"]}} ; {{ viensplanotajs["cena"]}}</h3>
+    </figure>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Prece</th>
+                <th scope="col">Cena</th>
+                <th scope="col">Labot</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for viensplanotajs in planotajs %}
+                <tr>
+                    <td>{{ viensplanotajs["prece"]}}</td>
+                    <td>{{ viensplanotajs["cena"]}}</td>
+                    <td>
+                        <a href="{{ url_for('labot', id=viensplanotajs['id']) }}" class="link-dark">
+                            <button class="btn btn-warning">Labot</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
     
-        <a href="{{ url_for('labot', id=viensplanotajs['id']) }}" class="link-dark">
-            <button class="btn btn-warning">Labot</button>
-    <hr>
-
-    {% endfor %} #Pārlabot tā, lai nevar ievadīt jebkādas vērtības.
-
+    <figure class="text-center">
     <h2> Kopējā iztērētā summa: {{ summa }} EUR</h2>
+    </figure>
 
 
 {% endblock %}
