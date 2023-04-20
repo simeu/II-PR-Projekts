@@ -52,10 +52,17 @@ def jauns_planotajs():
         id = request.form.get('id')
         prece = request.form.get('prece')
         cena = request.form.get('cena')
-        conn.execute(
-            "INSERT INTO planotajs (id, prece, cena) VALUES (?, ?, ?)", (id, prece, cena))
-        conn.commit()
-        conn.close()
+        if not prece:
+            flash("Ievadiet preci!")
+        elif not cena:
+            flash("Ievadiet cenu!")
+        elif cena != int or float:
+            flash("Cenai ir jābūt skaitlim!")
+        else:
+            conn.execute(
+                "INSERT INTO planotajs (id, prece, cena) VALUES (?, ?, ?)", (id, prece, cena))
+            conn.commit()
+            conn.close()
         return redirect(url_for('budzeta_planotajs', prece=prece, cena=cena))
     return render_template('jauns_planotajs.html')
 
@@ -105,6 +112,10 @@ def registreties():
         lietotajvards = request.form.get('lietotajvards')
         parole = request.form.get('parole')
         hash_parole = hashlib.md5(parole.encode())
+        if parole not in range(5, 11):
+            flash("Parolei jābūt no 5 līdz 10 rakstzīmēm!")
+        elif lietotajvards not in range(5, 11):
+            flash("Lietotājvārdam jābūt no 5 līdz 10 rakstzīmēm!")
         conn = savienot()
         conn.execute("INSERT INTO lietotajs (lietotajvards, parole) VALUES (?, ?)",
                      (lietotajvards, hash_parole))
@@ -123,15 +134,17 @@ def ienakt():
         lietotajs = conn.execute(
             "SELECT * FROM lietotajs WHERE lietotajvards = ?", (lietotajvards,)).fetchone()
         conn.close()
-        hash_parole = hashlib.md5(parole.encode())
+        hash_parole = hashlib.md5(parole.encode()).hexdigest()
         # Pievienot pareizu paroļu atpazīšanas algoritmu (salīdzina ar encrypted paroli, nevis lietotāja ievadīto).
         if lietotajs is None:
             flash(
                 "Lietotājs nav atrasts! Lūdzu reģistrējieties vai pārbaudiet rakstzīmes!")
-        elif lietotajs != parole:
-            flash("Nepareiza parole! Mēģiniet vēlreiz!")
+        elif parole is None:
+            flash("Ievadiet, lūdzu, paroli!")
+        elif lietotajs != lietotajvards:
+            flash("Lietotājs nav atrasts! Lūdzu reģistrējieties vai pārbaudiet rakstzīmes!")
         elif parole != hash_parole:
-            flash("Nepareiza parole! Mēģiniet vēlreiz!")
+            flash("Parole nav pareiza! Mēģiniet vēlreiz!")
         else:
             return redirect(url_for('budzeta_planotajs'))
     return render_template('login.html')

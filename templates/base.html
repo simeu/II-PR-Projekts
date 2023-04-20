@@ -29,6 +29,11 @@
             </li>
         </ul>
     </nav>
+    <div class="col-md-8 mx-auto">
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+
     <div class="container">
         {% block content %}{% endblock %}
     </div>
