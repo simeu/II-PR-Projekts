@@ -27,7 +27,7 @@
     
         <hr>
         
-        <form action="{{ url_for('dzest', id=planotajs["id"]) }}" method="POST">
+        <form action="{{ url_for('dzest', id=planotajs.id) }}" method="POST">
             <button type="submit" value="Dzēst"
             class="btn btn-danger"
             onlick="return confirm('Vai tiešām vēlaties dzēst ierakstu?')">Dzēst</button>
