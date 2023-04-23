@@ -38,7 +38,7 @@ def index():
 def budzeta_planotajs():
     conn = savienot()
     planotajs = conn.execute(
-        'SELECT id, prece, cena FROM planotajs').fetchall()
+        'SELECT *FROM planotajs').fetchall()
     summa = conn.execute("SELECT SUM(cena) FROM planotajs").fetchone()[0]
     conn.close()
     return render_template('budzeta_planotajs.html', planotajs=planotajs, summa=summa)
@@ -54,10 +54,13 @@ def jauns_planotajs():
         cena = request.form.get('cena')
         if not prece:
             flash("Ievadiet preci!")
+            return redirect(url_for('jauns_planotajs', prece=prece, cena=cena))
         elif not cena:
             flash("Ievadiet cenu!")
-        elif cena != int or float:
-            flash("Cenai ir jābūt skaitlim!")
+            return redirect(url_for('jauns_planotajs', prece=prece, cena=cena))
+        # elif cena != int or float:
+            # flash("Cenai ir jābūt skaitlim!")
+            # return redirect(url_for('jauns_planotajs', prece=prece, cena=cena))
         else:
             conn.execute(
                 "INSERT INTO planotajs (id, prece, cena) VALUES (?, ?, ?)", (id, prece, cena))
@@ -79,7 +82,7 @@ def labot(id):
         elif not cena:
             flash("Ieraksti cenu!")
 
-        elif cena != int or float:
+        elif cena != float or int:
             flash("Cenai ir jābūt skaitlim!")
 
         else:
@@ -102,23 +105,22 @@ def dzest(id):
     conn.commit()
     conn.close()
     flash("Ieraksts veiksmīgi dzēsts!")
-    return redirect(url_for('budzeta_planotajs'), planotajs=planotajs)
+    return redirect(url_for('budzeta_planotajs'))
 
 
 # Tiek reģistrēts jauns lietotājs.
 @app.route("/registreties", methods=['GET', 'POST'])
 def registreties():
     if request.method == "POST":
-        lietotajvards = request.form.get('lietotajvards')
+        lietotajv = request.form.get('lietotajvards')
         parole = request.form.get('parole')
         hash_parole = hashlib.md5(parole.encode())
         if parole not in range(5, 11):
             flash("Parolei jābūt no 5 līdz 10 rakstzīmēm!")
-        elif lietotajvards not in range(5, 11):
+        elif lietotajv not in range(5, 11):
             flash("Lietotājvārdam jābūt no 5 līdz 10 rakstzīmēm!")
         conn = savienot()
-        conn.execute("INSERT INTO lietotajs (lietotajvards, parole) VALUES (?, ?)",
-                     (lietotajvards, hash_parole))
+        conn.execute("INSERT INTO lietotajs (lietotajvards, parole) VALUES (?, ?)", (lietotajv, hash_parole))
         conn.commit()
         conn.close()
         return redirect(url_for('index'))
@@ -142,24 +144,13 @@ def ienakt():
         elif parole is None:
             flash("Ievadiet, lūdzu, paroli!")
         elif lietotajs != lietotajvards:
-            flash("Lietotājs nav atrasts! Lūdzu reģistrējieties vai pārbaudiet rakstzīmes!")
+            flash(
+                "Lietotājs nav atrasts! Lūdzu reģistrējieties vai pārbaudiet rakstzīmes!")
         elif parole != hash_parole:
             flash("Parole nav pareiza! Mēģiniet vēlreiz!")
         else:
             return redirect(url_for('budzeta_planotajs'))
     return render_template('login.html')
-
-
-# Tiek parādīts lietotāja profils.
-@app.route("/profils/<int:id>", methods=['GET', 'POST'])
-def profils(id):
-    conn = savienot()
-    lietotajs = conn.execute(
-        "SELECT * FROM lietotajs WHERE id = ?", (id,)).fetchone()
-    # Global Variables
-
-    conn.close()
-    return render_template('profils.html', lietotajs=lietotajs)
 
 
 if __name__ == '__main__':
