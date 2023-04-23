@@ -120,7 +120,8 @@ def registreties():
         elif lietotajv not in range(5, 11):
             flash("Lietotājvārdam jābūt no 5 līdz 10 rakstzīmēm!")
         conn = savienot()
-        conn.execute("INSERT INTO lietotajs (lietotajvards, parole) VALUES (?, ?)", (lietotajv, hash_parole))
+        conn.execute(
+            "INSERT INTO lietotajs (lietotajvards, parole) VALUES (?, ?)", (lietotajv, hash_parole))
         conn.commit()
         conn.close()
         return redirect(url_for('index'))
