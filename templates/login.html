@@ -1,20 +1,20 @@
 {% extends "base.html" %} 
 
 {% block content %}
-    <h1>{% block title %}Reģistrēšanās{% endblock %}</h1>
+    <h1>{% block title %}Ienākšana{% endblock %}</h1>
 
     <form method="post">
 
         <div class="form-group">
             <label for="prece">Ievadiet lietotājvārdu</label>
             <input type="text" required name="lietotajvards" placeholder="Lietotājvārds pēc izvēles (5-10 simbolu garumā)."
-                   class="form-control" value="{{ request.form['lietotajv'] }}"></input>
+                   class="form-control" value="{{ request.form['lietotajvards'] }}"></input>
         </div>
 
         <div class="form-group">
             <label for="cena">Ievadiet paroli</label>
             <input type="password" required name="parole" placeholder="Parole 5-10 simbolu garumā."
-                      class="form-control">{{ request.form['parole'] }}</input> 
+                      class="form-control" value = "{{ request.form['parole'] }}"></input> 
         </div>
 
         <div class="form-group">

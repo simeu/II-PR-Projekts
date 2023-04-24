@@ -114,10 +114,10 @@ def registreties():
     if request.method == "POST":
         lietotajv = request.form.get('lietotajvards')
         parole = request.form.get('parole')
-        hash_parole = hashlib.md5(parole.encode())
-        if parole not in range(5, 11):
+        hash_parole = hashlib.md5(parole.encode()).hexdigest()
+        if len(parole) < 5 or len(parole) > 10:
             flash("Parolei jābūt no 5 līdz 10 rakstzīmēm!")
-        elif lietotajv not in range(5, 11):
+        elif len(lietotajv) < 5 or len(lietotajv) > 10:
             flash("Lietotājvārdam jābūt no 5 līdz 10 rakstzīmēm!")
         conn = savienot()
         conn.execute(
@@ -136,9 +136,9 @@ def ienakt():
         conn = savienot()
         lietotajs = conn.execute(
             "SELECT * FROM lietotajs WHERE lietotajvards = ?", (lietotajvards,)).fetchone()
+        lietotajs = lietotajs["lietotajvards"]
         conn.close()
         hash_parole = hashlib.md5(parole.encode()).hexdigest()
-        # Pievienot pareizu paroļu atpazīšanas algoritmu (salīdzina ar encrypted paroli, nevis lietotāja ievadīto).
         if lietotajs is None:
             flash(
                 "Lietotājs nav atrasts! Lūdzu reģistrējieties vai pārbaudiet rakstzīmes!")
@@ -147,6 +147,7 @@ def ienakt():
         elif lietotajs != lietotajvards:
             flash(
                 "Lietotājs nav atrasts! Lūdzu reģistrējieties vai pārbaudiet rakstzīmes!")
+        
         elif parole != hash_parole:
             flash("Parole nav pareiza! Mēģiniet vēlreiz!")
         else:
