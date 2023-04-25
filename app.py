@@ -58,15 +58,13 @@ def jauns_planotajs():
         elif not cena:
             flash("Ievadiet cenu!")
             return redirect(url_for('jauns_planotajs', prece=prece, cena=cena))
-        # elif cena != int or float:
-            # flash("Cenai ir jābūt skaitlim!")
-            # return redirect(url_for('jauns_planotajs', prece=prece, cena=cena))
-        else:
-            conn.execute(
-                "INSERT INTO planotajs (id, prece, cena) VALUES (?, ?, ?)", (id, prece, cena))
+        elif cena.isnumeric():
+            conn.execute("INSERT INTO planotajs (id, prece, cena) VALUES (?, ?, ?)", (id, prece, cena))
             conn.commit()
             conn.close()
-        return redirect(url_for('budzeta_planotajs', prece=prece, cena=cena))
+            return redirect(url_for('budzeta_planotajs', prece=prece, cena=cena)) 
+        else:
+            flash("Cenai ir jābūt skaitliskai metodei! Mēģiniet vēlreiz.")
     return render_template('jauns_planotajs.html')
 
 
@@ -82,10 +80,7 @@ def labot(id):
         elif not cena:
             flash("Ieraksti cenu!")
 
-        #elif cena != float or int:
-            #flash("Cenai ir jābūt skaitlim!")
-
-        else:
+        elif cena.isnumeric():
             conn = savienot()
             conn.execute(
                 "UPDATE planotajs SET prece=?, cena=? WHERE id=?", (prece, cena, id))
@@ -94,6 +89,8 @@ def labot(id):
             flash("Ieraksts veiksmīgi labots!")
             return redirect(url_for('budzeta_planotajs'))
 
+        else:
+            flash("Lietotājvārds vai parole ir nepareiza! Mēģiniet vēlreiz.")
     return render_template('labot.html', planotajs=planotajs)
 
 
