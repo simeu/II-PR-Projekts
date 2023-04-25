@@ -82,13 +82,13 @@ def labot(id):
         elif not cena:
             flash("Ieraksti cenu!")
 
-        elif cena != float or int:
-            flash("Cenai ir jābūt skaitlim!")
+        #elif cena != float or int:
+            #flash("Cenai ir jābūt skaitlim!")
 
         else:
             conn = savienot()
             conn.execute(
-                "UPDATE planotajs SET prece=?, cena=? WHERE id=?", (prece, cena))
+                "UPDATE planotajs SET prece=?, cena=? WHERE id=?", (prece, cena, id))
             conn.commit()
             conn.close()
             flash("Ieraksts veiksmīgi labots!")
@@ -130,7 +130,9 @@ def registreties():
 
 @app.route("/ienakt", methods=['GET', 'POST'])
 def ienakt():
+    
     if request.method == "POST":
+        
         lietotajvards = request.form.get('lietotajvards')
         parole = request.form.get('parole')
         conn = savienot()
@@ -138,20 +140,19 @@ def ienakt():
             "SELECT * FROM lietotajs WHERE lietotajvards = ?", (lietotajvards,)).fetchone()
         lietotajs = lietotajs["lietotajvards"]
         conn.close()
-        hash_parole = hashlib.md5(parole.encode()).hexdigest()
         if lietotajs is None:
             flash(
                 "Lietotājs nav atrasts! Lūdzu reģistrējieties vai pārbaudiet rakstzīmes!")
         elif parole is None:
             flash("Ievadiet, lūdzu, paroli!")
-        elif lietotajs != lietotajvards:
-            flash(
-                "Lietotājs nav atrasts! Lūdzu reģistrējieties vai pārbaudiet rakstzīmes!")
-        
-        elif parole != hash_parole:
-            flash("Parole nav pareiza! Mēģiniet vēlreiz!")
-        else:
-            return redirect(url_for('budzeta_planotajs'))
+        else: 
+            hash_parole = hashlib.md5(parole.encode()).hexdigest()
+            if lietotajs != lietotajvards:
+                flash("Lietotājs nav atrasts! Lūdzu reģistrējieties vai pārbaudiet rakstzīmes!")
+            elif parole["parole"] != hash_parole:
+                flash("Parole nav pareiza! Mēģiniet vēlreiz!")
+            else:
+                return redirect(url_for('budzeta_planotajs'))
     return render_template('login.html')
 
 
