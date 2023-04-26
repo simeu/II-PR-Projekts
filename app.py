@@ -58,13 +58,13 @@ def jauns_planotajs():
         elif not cena:
             flash("Ievadiet cenu!")
             return redirect(url_for('jauns_planotajs', prece=prece, cena=cena))
-        elif cena.isnumeric():
+        elif isinstance(cena, float):
             conn.execute("INSERT INTO planotajs (id, prece, cena) VALUES (?, ?, ?)", (id, prece, cena))
             conn.commit()
             conn.close()
             return redirect(url_for('budzeta_planotajs', prece=prece, cena=cena)) 
         else:
-            flash("Cenai ir jābūt skaitliskai metodei! Mēģiniet vēlreiz.")
+            flash("Cenai ir jābūt skaitliskai vērtībai! Mēģiniet vēlreiz.")
     return render_template('jauns_planotajs.html')
 
 
@@ -74,23 +74,24 @@ def labot(id):
     if request.method == "POST":
         prece = request.form.get('prece')
         cena = request.form.get('cena')
+
         if not prece:
             flash("Ieraksti preci!")
 
         elif not cena:
             flash("Ieraksti cenu!")
 
-        elif cena.isnumeric():
+        elif isinstance(cena, float):
             conn = savienot()
             conn.execute(
                 "UPDATE planotajs SET prece=?, cena=? WHERE id=?", (prece, cena, id))
             conn.commit()
             conn.close()
             flash("Ieraksts veiksmīgi labots!")
-            return redirect(url_for('budzeta_planotajs'))
+            return render_template(budzeta_planotajs.html, planotajs=planotajs, prece=prece, cena=cena, id=id)
 
         else:
-            flash("Lietotājvārds vai parole ir nepareiza! Mēģiniet vēlreiz.")
+            flash("Notikusi kļūda! Mēģiniet vēlreiz.")
     return render_template('labot.html', planotajs=planotajs)
 
 
@@ -102,7 +103,7 @@ def dzest(id):
     conn.commit()
     conn.close()
     flash("Ieraksts veiksmīgi dzēsts!")
-    return redirect(url_for('budzeta_planotajs'))
+    return render_template('budzeta_planotajs.html', planotajs=planotajs)
 
 
 # Tiek reģistrēts jauns lietotājs.
@@ -143,10 +144,13 @@ def ienakt():
         elif parole is None:
             flash("Ievadiet, lūdzu, paroli!")
         else: 
+            conn = savienot()
+            parole2 = conn.execute("SELECT parole FROM lietotajs WHERE lietotajvards = ?", (lietotajvards,)).fetchone()
+            conn.close()
             hash_parole = hashlib.md5(parole.encode()).hexdigest()
             if lietotajs != lietotajvards:
                 flash("Lietotājs nav atrasts! Lūdzu reģistrējieties vai pārbaudiet rakstzīmes!")
-            elif parole["parole"] != hash_parole:
+            elif parole2["parole"] != hash_parole:
                 flash("Parole nav pareiza! Mēģiniet vēlreiz!")
             else:
                 return redirect(url_for('budzeta_planotajs'))
