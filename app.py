@@ -1,6 +1,8 @@
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash
 import hashlib
+import re
+
 
 
 def savienot(id=None):
@@ -21,6 +23,13 @@ def sanemt(id):
         ieraksts = {"prece": "Nezināms", "cena": "Nezināms"}
 
     return ieraksts
+
+def validacija(cena_str):
+    pattern = r'^\d+\.\d{2}$'
+    match = re.match(pattern, cena_str)
+    if match:
+        return True
+    return False
 
 
 app = Flask(__name__,
@@ -58,7 +67,7 @@ def jauns_planotajs():
         elif not cena:
             flash("Ievadiet cenu!")
             return redirect(url_for('jauns_planotajs', prece=prece, cena=cena))
-        elif isinstance(cena, float):
+        elif validacija(cena) == True:
             conn.execute("INSERT INTO planotajs (id, prece, cena) VALUES (?, ?, ?)", (id, prece, cena))
             conn.commit()
             conn.close()
@@ -81,7 +90,7 @@ def labot(id):
         elif not cena:
             flash("Ieraksti cenu!")
 
-        elif isinstance(cena, float):
+        elif validacija(cena) == True:
             conn = savienot()
             conn.execute(
                 "UPDATE planotajs SET prece=?, cena=? WHERE id=?", (prece, cena, id))

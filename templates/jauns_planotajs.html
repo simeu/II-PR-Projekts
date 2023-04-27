@@ -14,8 +14,8 @@
 
         <div class="form-group">
             <label for="cena">Ievadiet savas preces vai lietas vērtību EURO!(*Ja ir decimālskaitlis, jāraksta punkts, nevis komats.)</label>
-            <input type="text" name="cena" placeholder="Preces vai lietas vērtība EURO, piemēram 1.50, 2.00, utt."
-                      class="form-control">{{ request.form['cena'] }}</input>  
+            <input type="number" step = ".01" name="cena" placeholder="Preces vai lietas vērtība EURO, piemēram 1.50, 2.00, utt."
+                      class="form-control" value="{{ request.form['cena'] }}"></input>  
         </div>
 
         <div class="form-group">
