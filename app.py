@@ -9,7 +9,7 @@ def savienot(id=None):
     conn = sqlite3.connect('planotajs.db')
     conn.row_factory = sqlite3.Row
     if id:
-        conn.execute("SELECT * FROM planotajs WHERE id = ?", (id,))
+        return conn.execute("SELECT * FROM planotajs WHERE id = ?", (id,))
     return conn
 
 
@@ -25,7 +25,7 @@ def sanemt(id):
     return ieraksts
 
 def validacija(cena_str):
-    pattern = r'^\d+\.\d{2}$'
+    pattern = r'^\d{1,3}+\.\d{2}$'
     match = re.match(pattern, cena_str)
     if match:
         return True
@@ -81,6 +81,7 @@ def jauns_planotajs():
 def labot(id):
     planotajs = sanemt(id)
     if request.method == "POST":
+        id = request.form.get('id')
         prece = request.form.get('prece')
         cena = request.form.get('cena')
 
@@ -97,7 +98,7 @@ def labot(id):
             conn.commit()
             conn.close()
             flash("Ieraksts veiksmīgi labots!")
-            return render_template(budzeta_planotajs.html, planotajs=planotajs, prece=prece, cena=cena, id=id)
+            return render_template("budzeta_planotajs.html", planotajs=planotajs, prece=prece, cena=cena, id=id)
 
         else:
             flash("Notikusi kļūda! Mēģiniet vēlreiz.")
