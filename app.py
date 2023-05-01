@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 import hashlib
 import re
 
@@ -24,8 +24,28 @@ def sanemt(id):
 
     return ieraksts
 
+# def lietotaji(lietotajv):
+#     conn = savienot
+#     lietotajv = conn.execute("SELECT * FROM lietotajs WHERE lietotajv= ?", (lietotajv,)).fetchall()
+#     conn.close()
+    
+#     if lietotajv is None:
+#         lietotajv = "Nav ierakstu!"
+
+# Alternatīvs budžeta plānotajs:
+# @app.route("/<lietotajv>/budzeta_planotajs", methods=["GET", "POST"])  
+# def budzeta_planotajs(lietotajv):
+#         conn = lietotaji(lietotajv)
+#         planotajs = conn.execute(
+#             'SELECT * FROM planotajs WHERE lietotajv = ?').fetchall()
+#         summa = conn.execute("SELECT SUM(cena) FROM planotajs WHERE lietotajv = ?").fetchone()[0]
+#         conn.close()
+#         return render_template('budzeta_planotajs.html', planotajs=planotajs, summa=summa)
+# 
+# Šis + flask sessions. eg: sessions = lietotajs["lietotajvards"]. 
+
 def validacija(cena_str):
-    pattern = r'^\d{1,3}+\.\d{2}$'
+    pattern = r'^\d{1,}+\.\d{2}$'
     match = re.match(pattern, cena_str)
     if match:
         return True
@@ -42,81 +62,6 @@ app.config["SECRET_KEY"] = "dsfn893ru9rubnfb"
 def index():
     return render_template('par.html')
 
-
-@app.route("/budzeta_planotajs")
-def budzeta_planotajs():
-    conn = savienot()
-    planotajs = conn.execute(
-        'SELECT *FROM planotajs').fetchall()
-    summa = conn.execute("SELECT SUM(cena) FROM planotajs").fetchone()[0]
-    conn.close()
-    return render_template('budzeta_planotajs.html', planotajs=planotajs, summa=summa)
-
-
-# Tiek izveidots jauns ieraksts.
-@app.route('/jauns_planotajs', methods=['GET', 'POST'])
-def jauns_planotajs():
-    conn = savienot()
-    if request.method == "POST":
-        id = request.form.get('id')
-        prece = request.form.get('prece')
-        cena = request.form.get('cena')
-        if not prece:
-            flash("Ievadiet preci!")
-            return redirect(url_for('jauns_planotajs', prece=prece, cena=cena))
-        elif not cena:
-            flash("Ievadiet cenu!")
-            return redirect(url_for('jauns_planotajs', prece=prece, cena=cena))
-        elif validacija(cena) == True:
-            conn.execute("INSERT INTO planotajs (id, prece, cena) VALUES (?, ?, ?)", (id, prece, cena))
-            conn.commit()
-            conn.close()
-            return redirect(url_for('budzeta_planotajs', prece=prece, cena=cena)) 
-        else:
-            flash("Cenai ir jābūt skaitliskai vērtībai! Mēģiniet vēlreiz.")
-    return render_template('jauns_planotajs.html')
-
-
-@app.route("/<int:id>/labot", methods=['GET', 'POST'])  # Ierakstu labošana.
-def labot(id):
-    planotajs = sanemt(id)
-    if request.method == "POST":
-        id = request.form.get('id')
-        prece = request.form.get('prece')
-        cena = request.form.get('cena')
-
-        if not prece:
-            flash("Ieraksti preci!")
-
-        elif not cena:
-            flash("Ieraksti cenu!")
-
-        elif validacija(cena) == True:
-            conn = savienot()
-            conn.execute(
-                "UPDATE planotajs SET prece=?, cena=? WHERE id=?", (prece, cena, id))
-            conn.commit()
-            conn.close()
-            flash("Ieraksts veiksmīgi labots!")
-            return render_template("budzeta_planotajs.html", planotajs=planotajs, prece=prece, cena=cena, id=id)
-
-        else:
-            flash("Notikusi kļūda! Mēģiniet vēlreiz.")
-    return render_template('labot.html', planotajs=planotajs)
-
-
-@app.route("/<int:id>/dzest", methods=('POST',))  # Ierakstu dzēšana.
-def dzest(id):
-    planotajs = sanemt(id)
-    conn = savienot()
-    conn.execute("DELETE FROM planotajs WHERE id = ?", (id,))
-    conn.commit()
-    conn.close()
-    flash("Ieraksts veiksmīgi dzēsts!")
-    return render_template('budzeta_planotajs.html', planotajs=planotajs)
-
-
-# Tiek reģistrēts jauns lietotājs.
 @app.route("/registreties", methods=['GET', 'POST'])
 def registreties():
     if request.method == "POST":
@@ -132,15 +77,13 @@ def registreties():
             "INSERT INTO lietotajs (lietotajvards, parole) VALUES (?, ?)", (lietotajv, hash_parole))
         conn.commit()
         conn.close()
-        return redirect(url_for('index'))
+        return redirect(url_for('budzeta_planotajs'))
     return render_template('registreties.html')
 
 
 @app.route("/ienakt", methods=['GET', 'POST'])
-def ienakt():
-    
+def ienakt():   
     if request.method == "POST":
-        
         lietotajvards = request.form.get('lietotajvards')
         parole = request.form.get('parole')
         conn = savienot()
@@ -165,6 +108,84 @@ def ienakt():
             else:
                 return redirect(url_for('budzeta_planotajs'))
     return render_template('login.html')
+
+
+@app.route("/budzeta_planotajs", methods=["GET", "POST"])  # Ierakstu saraksts.
+def budzeta_planotajs():
+        conn = savienot()
+        planotajs = conn.execute(
+            'SELECT * FROM planotajs').fetchall()
+        summa = conn.execute("SELECT SUM(cena) FROM planotajs").fetchone()[0]
+        conn.close()
+        return render_template('budzeta_planotajs.html', planotajs=planotajs, summa=summa)
+
+
+# Tiek izveidots jauns ieraksts.
+@app.route('/jauns_planotajs', methods=['GET', 'POST'])
+def jauns_planotajs():
+    conn = savienot()
+    if request.method == "POST":
+            id = request.form.get('id')
+            prece = request.form.get('prece')
+            cena = request.form.get('cena')
+            if not prece:
+                flash("Ievadiet preci!")
+                return redirect(url_for('jauns_planotajs', prece=prece, cena=cena))
+            elif not cena:
+                flash("Ievadiet cenu!")
+                return redirect(url_for('jauns_planotajs', prece=prece, cena=cena))
+            elif validacija(cena) == True:
+                conn.execute("INSERT INTO planotajs (id, prece, cena) VALUES (?, ?, ?)", (id, prece, cena))
+                conn.commit()
+                conn.close()
+                return redirect(url_for('budzeta_planotajs', prece=prece, cena=cena)) 
+            else:
+                flash("Cenai ir jābūt skaitliskai vērtībai! Mēģiniet vēlreiz.")
+    return render_template('jauns_planotajs.html')
+
+
+@app.route("/<int:id>/labot", methods=['GET', 'POST'])  # Ierakstu labošana.
+def labot(id):
+    planotajs = sanemt(id)
+    if request.method == "POST":
+        id = request.form.get('id')
+        prece = request.form.get('prece')
+        cena = request.form.get('cena')
+
+        if not prece:
+            flash("Ieraksti preci!")
+
+        elif not cena:
+            flash("Ieraksti cenu!")
+
+        elif validacija(cena) == True:
+            conn = savienot()
+            conn.execute(
+                "UPDATE planotajs SET prece=?, cena=? WHERE id=?", (prece, cena, id))
+            conn.commit()
+            conn.close()
+            flash("Ieraksts veiksmīgi labots!")
+            return redirect(url_for("budzeta_planotajs"))
+
+        else:
+            flash("Notikusi kļūda! Mēģiniet vēlreiz.")
+    return render_template('labot.html', planotajs=planotajs)
+
+
+@app.route("/<int:id>/dzest", methods=('POST',))  # Ierakstu dzēšana.
+def dzest(id):
+    planotajs = sanemt(id)
+    conn = savienot()
+    conn.execute("DELETE FROM planotajs WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+    flash("Ieraksts veiksmīgi dzēsts!")
+    return redirect(url_for('budzeta_planotajs'))
+
+@app.route("/iziet")
+def iziet():
+    session.pop("lietotajvards", None)
+    return redirect(url_for('ienakt'))
 
 
 if __name__ == '__main__':
