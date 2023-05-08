@@ -24,6 +24,16 @@ def sanemt(id):
 
     return ieraksts
 
+
+def lietotaji(lietotajv_dati):
+    conn = savienot()
+    lietotajv_dati = conn.execute("SELECT * FROM planotajs WHERE lietotajv= ?", (lietotajv_dati,)).fetchall()
+    conn.close()
+    
+    if lietotajv_dati is None:
+        lietotajv_dati = "Nav ierakstu!"
+
+
 def validacija(cena_str):
     pattern = r'^\d+\.\d{2}$'
     match = re.match(pattern, cena_str)
@@ -86,39 +96,41 @@ def ienakt():
             elif parole2["parole"] != hash_parole:
                 flash("Parole nav pareiza! Mēģiniet vēlreiz!")
             else:
-                return redirect(url_for('budzeta_planotajs'))
+                return redirect(url_for('budzeta_planotajs', lietotajv=lietotajs))
     return render_template('login.html')
 
 
-@app.route("/budzeta_planotajs", methods=["GET", "POST"])  # Ierakstu saraksts.
-def budzeta_planotajs():
-        conn = savienot()
-        planotajs = conn.execute(
-            'SELECT * FROM planotajs').fetchall()
-        summa = conn.execute("SELECT SUM(cena) FROM planotajs").fetchone()[0]
-        conn.close()
+# Alternatīvs budžeta plānotajs:
+@app.route("/<lietotajv>/budzeta_planotajs", methods=["GET", "POST"])  
+def budzeta_planotajs(lietotajv):
+        conn = lietotaji(lietotajv)
+        c = savienot()
+        planotajs = c.execute("SELECT * FROM planotajs WHERE lietotajv = ?", (lietotajv,)).fetchall()
+        summa = c.execute("SELECT SUM(cena) FROM planotajs WHERE lietotajv = ?", (lietotajv,)).fetchone()[0]
+        c.close()
         return render_template('budzeta_planotajs.html', planotajs=planotajs, summa=summa)
 
 
 # Tiek izveidots jauns ieraksts.
-@app.route('/jauns_planotajs', methods=['GET', 'POST'])
-def jauns_planotajs():
+@app.route('/<lietotajv>/jauns_planotajs', methods=['GET', 'POST'])
+def jauns_planotajs(lietotajv):
     conn = savienot()
+    viensLietotajs = lietotaji(lietotajv)
     if request.method == "POST":
             id = request.form.get('id')
             prece = request.form.get('prece')
             cena = request.form.get('cena')
             if not prece:
                 flash("Ievadiet preci!")
-                return redirect(url_for('jauns_planotajs', prece=prece, cena=cena))
+                return redirect(url_for('jauns_planotajs', prece=prece, cena=cena, lietotajv=lietotajv))
             elif not cena:
                 flash("Ievadiet cenu!")
-                return redirect(url_for('jauns_planotajs', prece=prece, cena=cena))
+                return redirect(url_for('jauns_planotajs', prece=prece, cena=cena, lietotajv=lietotajv))
             elif validacija(cena) == True:
-                conn.execute("INSERT INTO planotajs (id, prece, cena) VALUES (?, ?, ?)", (id, prece, cena))
+                conn.execute("INSERT INTO planotajs (id, prece, cena) VALUES (?, ?, ?, ?)", (id, prece, cena, lietotajv))
                 conn.commit()
                 conn.close()
-                return redirect(url_for('budzeta_planotajs', prece=prece, cena=cena)) 
+                return redirect(url_for('budzeta_planotajs', prece=prece, cena=cena, lietotajv=lietotajv)) 
             else:
                 flash("Cenai ir jābūt skaitliskai vērtībai! Mēģiniet vēlreiz.")
     return render_template('jauns_planotajs.html')
@@ -138,9 +150,7 @@ def labot(id):
         elif not cena:
             flash("Ieraksti cenu!")
 
-        elif validacija(cena) == False:
-            flash("Cenai ir jābūt skaitliskai vērtībai! Mēģiniet vēlreiz.")
-        else:
+        elif validacija(cena) == True:
             conn = savienot()
             conn.execute(
                 "UPDATE planotajs SET prece=?, cena=? WHERE id=?", (prece, cena, id))
@@ -148,6 +158,9 @@ def labot(id):
             conn.close()
             flash("Ieraksts veiksmīgi labots!")
             return redirect(url_for("budzeta_planotajs"))
+
+        else:
+            flash("Notikusi kļūda! Mēģiniet vēlreiz.")
     return render_template('labot.html', planotajs=planotajs)
 
 
@@ -165,6 +178,7 @@ def dzest(id):
 def iziet():
     session.pop("lietotajvards", None)
     return redirect(url_for('ienakt'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)
